@@ -21,5 +21,7 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // /api/* is the rewrite proxy to the backend (see next.config.ts) — it must pass
+  // through untouched. This guard only applies to actual page navigations.
+  matcher: ["/((?!api/|_next/static|_next/image|favicon.ico).*)"],
 };
