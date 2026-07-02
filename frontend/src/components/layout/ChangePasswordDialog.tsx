@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { KeyRound } from "lucide-react";
 
 import { apiPost, ApiError } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
@@ -15,12 +14,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
-export function ChangePasswordDialog() {
-  const [open, setOpen] = useState(false);
+// Controlled dialog with no trigger: it must be rendered OUTSIDE the dropdown
+// menu that opens it — a dialog mounted inside DropdownMenuContent unmounts
+// (and instantly closes) when the menu closes.
+export function ChangePasswordDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +41,7 @@ export function ChangePasswordDialog() {
       toast.success("Password updated.");
       setCurrentPassword("");
       setNewPassword("");
-      setOpen(false);
+      onOpenChange(false);
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Failed to update password");
     } finally {
@@ -45,15 +50,7 @@ export function ChangePasswordDialog() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            <KeyRound className="mr-2 h-4 w-4" />
-            Change password
-          </DropdownMenuItem>
-        }
-      />
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Change password</DialogTitle>
