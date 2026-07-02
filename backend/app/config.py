@@ -14,6 +14,15 @@ class Settings(BaseSettings):
     STORAGE_ROOT: str = "./storage"
     CORS_ORIGINS: str = "http://localhost:3000"
 
+    # Local dev: frontend and backend are both on "localhost" (same site, different
+    # port), so Lax + non-Secure works over plain HTTP. Once frontend and backend live
+    # on different registrable domains (e.g. vercel.app vs railway.app), the browser
+    # treats them as cross-site, and only "None" + Secure cookies are sent on those
+    # cross-site requests. Set COOKIE_SAMESITE=none and COOKIE_SECURE=true in that
+    # deployment's env vars (both must change together — "None" requires Secure).
+    COOKIE_SAMESITE: str = "lax"
+    COOKIE_SECURE: bool = False
+
     @property
     def cors_origins_list(self) -> list[str]:
         return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
