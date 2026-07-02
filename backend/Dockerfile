@@ -13,4 +13,7 @@ RUN mkdir -p /app/storage/scripts /app/storage/audio
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"]
+# $PORT is injected by hosting platforms like Railway; defaults to 8000 for local
+# docker-compose. --reload is dropped here since production has no mounted source to
+# watch; docker-compose.yml runs uvicorn directly with --reload for local dev instead.
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
