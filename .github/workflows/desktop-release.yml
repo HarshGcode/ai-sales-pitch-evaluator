@@ -13,7 +13,21 @@ permissions:
   contents: write # create the release + upload assets
 
 jobs:
+  # Pre-create one draft release for the tag. Without this, the two build jobs
+  # race and electron-builder creates a duplicate draft per platform.
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create draft release for the tag (if missing)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 ||
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
+            --draft --title "$GITHUB_REF_NAME" --generate-notes
+
   build:
+    needs: create-release
     strategy:
       fail-fast: false
       matrix:
