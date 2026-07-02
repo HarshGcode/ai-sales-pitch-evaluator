@@ -1,5 +1,12 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
+// fetch() calls go through the same-origin /api proxy (see next.config.ts) so the auth
+// cookie is always first-party. Direct browser navigations (e.g. the CSV export link)
+// don't need this — a top-level navigation's cookies aren't subject to third-party
+// blocking the way a cross-site fetch()'s are, so apiUrl() below still points directly
+// at the backend.
+const API_PROXY_BASE = "/api";
+
 // FastAPI returns `detail` as a plain string for most errors, but as an array of
 // Pydantic validation-error objects ({loc, msg, type}) for 422s — e.g. an invalid
 // email on the invite form. Without this, formatting an array/object as a string
@@ -30,7 +37,7 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
+  const res = await fetch(`${API_PROXY_BASE}${path}`, {
     ...init,
     credentials: "include",
     headers: {
