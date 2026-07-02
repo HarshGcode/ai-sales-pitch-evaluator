@@ -52,27 +52,44 @@ jobs:
       - name: Regenerate platform icons
         run: npm run icons
 
+      # An empty CSC_LINK makes electron-builder look for a certificate file and
+      # fail, so the signing env vars are only exported when the secret is set.
       - name: Build and publish (macOS)
         if: runner.os == 'macOS'
-        run: npx electron-builder --mac --publish always
+        shell: bash
+        run: |
+          if [ -n "$MAC_CSC_LINK" ]; then
+            export CSC_LINK="$MAC_CSC_LINK" CSC_KEY_PASSWORD="$MAC_CSC_KEY_PASSWORD"
+          fi
+          if [ -n "$APPLE_ID" ] ; then
+            export APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+          else
+            unset APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID
+          fi
+          npx electron-builder --mac --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Optional code signing + notarization — builds stay unsigned until
           # these repository secrets are configured (see docs/RELEASING.md):
-          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          MAC_CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          MAC_CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Build and publish (Windows)
         if: runner.os == 'Windows'
-        run: npx electron-builder --win --publish always
+        shell: bash
+        run: |
+          if [ -n "$WIN_CSC_LINK" ]; then
+            export CSC_LINK="$WIN_CSC_LINK" CSC_KEY_PASSWORD="$WIN_CSC_KEY_PASSWORD"
+          fi
+          npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Optional Windows code signing:
-          CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
 
       - name: Upload build artifacts (debug aid)
         uses: actions/upload-artifact@v4
