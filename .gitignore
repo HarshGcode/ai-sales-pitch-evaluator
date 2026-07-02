@@ -1,0 +1,22 @@
+# backend
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.db
+backend/storage/scripts/*
+backend/storage/audio/*
+!backend/storage/scripts/.gitkeep
+!backend/storage/audio/.gitkeep
+backend/.pytest_cache/
+
+# frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+
+# env
+.env
+
+# misc
+.DS_Store
+*.log
