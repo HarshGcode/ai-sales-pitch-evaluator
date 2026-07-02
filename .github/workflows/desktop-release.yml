@@ -1,0 +1,87 @@
+# Builds the desktop app for Windows + macOS and publishes the installers as
+# GitHub Release assets whenever a version tag (v1.2.3) is pushed.
+#
+# Trigger a release from the repo root with:  npm run release:patch
+name: Desktop Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write # create the release + upload assets
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest # builds .dmg (universal: Apple Silicon + Intel)
+          - os: windows-latest # builds .exe installer + portable .exe
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        working-directory: desktop
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Fail if tag does not match desktop/package.json version
+        shell: bash
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package version $PKG_VERSION"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Regenerate platform icons
+        run: npm run icons
+
+      - name: Build and publish (macOS)
+        if: runner.os == 'macOS'
+        run: npx electron-builder --mac --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional code signing + notarization — builds stay unsigned until
+          # these repository secrets are configured (see docs/RELEASING.md):
+          CSC_LINK: ${{ secrets.MAC_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Build and publish (Windows)
+        if: runner.os == 'Windows'
+        run: npx electron-builder --win --publish always
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Optional Windows code signing:
+          CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+
+      - name: Upload build artifacts (debug aid)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-${{ runner.os }}
+          path: |
+            desktop/dist/*.dmg
+            desktop/dist/*.exe
+            desktop/dist/*.zip
+            desktop/dist/latest*.yml
+          if-no-files-found: ignore

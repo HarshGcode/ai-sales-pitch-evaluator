@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend — AI Sales Pitch Evaluator
 
-## Getting Started
+Next.js (App Router) + TypeScript + Tailwind + shadcn/ui. Deployed on **Vercel**.
 
-First, run the development server:
+All API calls go to `/api/*` on the frontend's own origin; `next.config.ts` rewrites
+them to the FastAPI backend (`NEXT_PUBLIC_API_URL`). This keeps the JWT auth cookie
+first-party, so login works in browsers **and** in the Electron desktop app
+(see [`../desktop`](../desktop/README.md)) without third-party-cookie issues.
+
+## Develop
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000 (expects the backend on :8000)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Variable | Purpose | Example |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | Backend origin that `/api/*` is proxied to | `https://<your-app>.up.railway.app` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set it in Vercel → Project → Settings → Environment Variables (and in `.env` for
+local Docker; see the repo root `.env.example`).
 
-## Learn More
+## Structure
 
-To learn more about Next.js, take a look at the following resources:
+- `src/app/(auth)` — login/register pages
+- `src/app/(app)` — authenticated app (dashboard, scripts, evaluations, leaderboard)
+- `src/components` — UI components (shadcn/ui based)
+- `src/lib` — API client and utilities
+- `src/proxy.ts` — auth guard (excludes `/api/*`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Build
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run build && npm run start
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploys automatically on Vercel from `main` (project root: `frontend/`).

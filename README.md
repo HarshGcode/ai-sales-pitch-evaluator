@@ -31,12 +31,34 @@ orgs yet.
 
 ## Stack
 
-- Frontend: Next.js (App Router) + TypeScript + Tailwind + shadcn/ui
-- Backend: FastAPI (Python)
+- Frontend: Next.js (App Router) + TypeScript + Tailwind + shadcn/ui — deployed on Vercel
+- Backend: FastAPI (Python) — deployed on Railway
 - Database: PostgreSQL
+- Desktop: Electron + electron-builder (Windows `.exe` + portable, macOS universal `.dmg`)
 - AI: Groq or OpenAI (Whisper/whisper-large-v3 + GPT/Llama) when a key is set,
   otherwise a deterministic mock so the whole app is demoable with zero external
   accounts.
+
+## Desktop app (Windows + macOS)
+
+The [`desktop/`](desktop/README.md) folder contains a native desktop app that wraps
+the deployed frontend and talks to the Railway backend — same login, same features,
+plus tray icon, native notifications, auto-updates, and offline-safe session
+persistence.
+
+```bash
+npm run desktop        # run against production
+npm run desktop:dev    # run against http://localhost:3000
+npm run build:mac      # build macOS .dmg (universal)
+npm run build:win      # build Windows installer + portable .exe
+npm run release:patch  # tag vX.Y.Z -> CI builds installers -> GitHub Release
+```
+
+Installers are published automatically to
+[GitHub Releases](https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases)
+by `.github/workflows/desktop-release.yml` on every version tag. See
+[desktop/docs/INSTALL.md](desktop/docs/INSTALL.md) and
+[desktop/docs/RELEASING.md](desktop/docs/RELEASING.md).
 
 ## Run locally with Docker
 

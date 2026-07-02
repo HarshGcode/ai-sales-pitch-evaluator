@@ -1,0 +1,16 @@
+{
+  "name": "ai-sales-pitch-evaluator",
+  "private": true,
+  "description": "Monorepo scripts — frontend (Next.js), backend (FastAPI), desktop (Electron).",
+  "scripts": {
+    "desktop": "npm --prefix desktop run start",
+    "desktop:dev": "npm --prefix desktop run dev",
+    "desktop:install": "npm --prefix desktop install",
+    "build:desktop": "npm --prefix desktop run build",
+    "build:win": "npm --prefix desktop run build:win",
+    "build:mac": "npm --prefix desktop run build:mac",
+    "release:patch": "node desktop/scripts/release.js patch",
+    "release:minor": "node desktop/scripts/release.js minor",
+    "release:major": "node desktop/scripts/release.js major"
+  }
+}

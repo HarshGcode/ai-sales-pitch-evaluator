@@ -1,0 +1,32 @@
+{
+  "name": "ai-sales-pitch-evaluator-desktop",
+  "productName": "AI Sales Pitch Evaluator",
+  "version": "1.0.0",
+  "description": "Desktop app for the AI Sales Pitch Evaluator — evaluate sales pitches against your ideal script with AI.",
+  "main": "main/main.js",
+  "author": "Harsh Gupta <harshgupta.cfa@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/HarshGcode/ai-sales-pitch-evaluator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HarshGcode/ai-sales-pitch-evaluator.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "icons": "node scripts/generate-icons.js",
+    "pack": "electron-builder --dir",
+    "build": "electron-builder --win --mac",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "release": "electron-builder --win --mac --publish always"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.12",
+    "png2icons": "^2.0.1"
+  }
+}

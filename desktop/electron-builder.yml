@@ -1,0 +1,78 @@
+# Packaging config for electron-builder.
+# Docs: https://www.electron.build/configuration
+
+appId: com.harshgupta.aisalespitchevaluator
+productName: AI Sales Pitch Evaluator
+copyright: Copyright © 2026 Harsh Gupta
+
+directories:
+  buildResources: build
+  output: dist
+
+# Ship only the runtime files — keeps the installer small.
+files:
+  - main/**
+  - preload/**
+  - build/tray/**
+  - build/icon.png
+  - package.json
+
+asar: true
+compression: maximum
+
+# Auto-update + release assets go to GitHub Releases of this repo.
+publish:
+  provider: github
+  owner: HarshGcode
+  repo: ai-sales-pitch-evaluator
+
+# ---------- macOS ----------
+mac:
+  category: public.app-category.business
+  icon: build/icon.icns
+  # One binary that runs natively on both Apple Silicon and Intel.
+  target:
+    - target: dmg
+      arch: [universal]
+    - target: zip # required by electron-updater on macOS
+      arch: [universal]
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    NSMicrophoneUsageDescription: Microphone access is used to record sales pitches for AI evaluation.
+  # Signing/notarization are optional and activate automatically when the
+  # CSC_LINK / APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID env vars
+  # are present (see docs/RELEASING.md). Unsigned builds still work locally.
+  notarize: false
+
+dmg:
+  artifactName: ${productName}-${version}-mac-${arch}.${ext}
+  contents:
+    - { x: 130, y: 220 }
+    - { x: 410, y: 220, type: link, path: /Applications }
+
+# ---------- Windows ----------
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  # Code signing (optional): set CSC_LINK + CSC_KEY_PASSWORD env vars, or for
+  # Azure Trusted Signing set the azureSignOptions block. Unsigned builds work
+  # but trigger a SmartScreen warning on first run.
+
+nsis:
+  artifactName: ${productName}-Setup-${version}.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: always
+  shortcutName: ${productName}
+
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}

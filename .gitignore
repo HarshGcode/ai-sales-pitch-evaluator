@@ -14,6 +14,10 @@ frontend/node_modules/
 frontend/.next/
 frontend/.env.local
 
+# desktop (Electron)
+desktop/node_modules/
+desktop/dist/
+
 # env
 .env
 
