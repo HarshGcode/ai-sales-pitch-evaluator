@@ -39,7 +39,9 @@ try {
 }
 run(`git commit -m "Release ${tag}"`);
 run(`git tag ${tag}`);
-run("git push origin HEAD --follow-tags");
+// Push the tag explicitly: --follow-tags only pushes annotated tags, and
+// `git tag` creates a lightweight one, so the workflow would never trigger.
+run(`git push origin HEAD refs/tags/${tag}`);
 
 console.log(`\nTagged and pushed ${tag}.`);
 console.log(
