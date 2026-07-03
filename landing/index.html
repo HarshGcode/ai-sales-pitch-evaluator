@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Sales Pitch Evaluator — Desktop App for macOS &amp; Windows</title>
+<meta name="description" content="Download the AI Sales Pitch Evaluator desktop app for macOS and Windows. Upload your ideal sales script, record or upload pitch audio, and let AI score adherence, tone, confidence and compliance." />
+<meta property="og:title" content="AI Sales Pitch Evaluator — Desktop App" />
+<meta property="og:description" content="AI-powered sales pitch evaluation. Download for macOS and Windows." />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234f7cff'/%3E%3Cstop offset='1' stop-color='%237b5bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='64' y='64' width='896' height='896' rx='200' fill='url(%23g)'/%3E%3Cg stroke='%23fff' stroke-width='58' stroke-linecap='round' fill='none'%3E%3Crect x='404' y='220' width='216' height='380' rx='108' fill='%23fff' stroke='none'/%3E%3Cpath d='M292 500 a220 220 0 0 0 440 0'/%3E%3Cline x1='512' y1='726' x2='512' y2='800'/%3E%3C/g%3E%3C/svg%3E" />
+<style>
+  :root {
+    --bg: #0b0f1a;
+    --bg-card: #121829;
+    --border: rgba(255, 255, 255, 0.08);
+    --text: #e7ecf5;
+    --muted: #93a0b8;
+    --accent1: #4f7cff;
+    --accent2: #7b5bff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, Roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 0;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 17px; }
+  .brand svg { border-radius: 10px; }
+  nav a {
+    color: var(--muted); text-decoration: none; font-size: 14px; margin-left: 22px;
+  }
+  nav a:hover { color: var(--text); }
+
+  .hero { text-align: center; padding: 72px 0 56px; position: relative; }
+  .hero::before {
+    content: ""; position: absolute; inset: -120px 0 0;
+    background: radial-gradient(600px 320px at 50% 0%, rgba(79, 124, 255, 0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 5px 14px; font-size: 13px; color: var(--muted); margin-bottom: 26px;
+    background: rgba(255,255,255,0.03);
+  }
+  .badge .dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; }
+  h1 {
+    font-size: clamp(34px, 5.4vw, 56px); line-height: 1.12; font-weight: 800;
+    letter-spacing: -0.02em; margin-bottom: 18px;
+  }
+  h1 .grad {
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .sub {
+    max-width: 640px; margin: 0 auto 38px; color: var(--muted);
+    font-size: clamp(15px, 2vw, 18px);
+  }
+  .dl-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 26px; border-radius: 12px; font-size: 16px; font-weight: 600;
+    text-decoration: none; transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-primary {
+    color: #fff;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    box-shadow: 0 8px 30px rgba(79, 124, 255, 0.35);
+  }
+  .btn-secondary {
+    color: var(--text); background: var(--bg-card); border: 1px solid var(--border);
+  }
+  .btn svg { flex-shrink: 0; }
+  .dl-meta { margin-top: 16px; font-size: 13px; color: var(--muted); }
+  .dl-meta a { color: var(--muted); }
+
+  section { padding: 64px 0; border-top: 1px solid var(--border); }
+  h2 { font-size: 28px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; text-align: center; }
+  .section-sub { text-align: center; color: var(--muted); margin-bottom: 40px; font-size: 15px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+  }
+  .card .ico {
+    width: 40px; height: 40px; border-radius: 10px; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(79, 124, 255, 0.14); color: var(--accent1);
+  }
+  .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+  .card p { font-size: 14px; color: var(--muted); }
+
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; counter-reset: step; }
+  .step { position: relative; padding: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px; }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    display: inline-flex; width: 30px; height: 30px; border-radius: 50%;
+    align-items: center; justify-content: center; margin-bottom: 12px;
+    font-weight: 700; font-size: 14px; color: #fff;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  }
+  .step h3 { font-size: 15px; margin-bottom: 6px; }
+  .step p { font-size: 14px; color: var(--muted); }
+
+  .install-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+  .install-cols .card ol { padding-left: 20px; font-size: 14px; color: var(--muted); display: flex; flex-direction: column; gap: 8px; }
+  .install-cols .card ol strong { color: var(--text); font-weight: 600; }
+  .os-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .os-head h3 { font-size: 17px; }
+  .note {
+    margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px;
+    background: rgba(79, 124, 255, 0.08); border: 1px solid rgba(79, 124, 255, 0.2);
+    color: var(--muted);
+  }
+
+  footer {
+    border-top: 1px solid var(--border); padding: 34px 0 44px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    color: var(--muted); font-size: 14px;
+  }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#4f7cff"/><stop offset="1" stop-color="#7b5bff"/>
+        </linearGradient></defs>
+        <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#lg)"/>
+        <g stroke="#fff" stroke-width="58" stroke-linecap="round" fill="none">
+          <rect x="404" y="220" width="216" height="380" rx="108" fill="#fff" stroke="none"/>
+          <path d="M292 500 a220 220 0 0 0 440 0"/>
+          <line x1="512" y1="726" x2="512" y2="800"/>
+        </g>
+      </svg>
+      AI Sales Pitch Evaluator
+    </div>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#install">Install</a>
+      <a href="https://frontend-ochre-ten-27.vercel.app" target="_blank" rel="noopener">Web App</a>
+      <a href="https://github.com/HarshGcode/ai-sales-pitch-evaluator" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="badge"><span class="dot"></span> <span id="version-label">Latest release</span> · Free download</div>
+    <h1>Evaluate every sales pitch<br/>with <span class="grad">AI precision</span></h1>
+    <p class="sub">
+      Upload your ideal sales script, then record or upload real pitch audio.
+      AI transcribes it and scores script adherence, tone, confidence, empathy and
+      compliance — with dashboards and a team leaderboard built in.
+    </p>
+    <div class="dl-row">
+      <a class="btn btn-primary" id="dl-mac"
+         href="https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases/download/v1.0.0/AI-Sales-Pitch-Evaluator-1.0.0-mac-universal.dmg">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Download for macOS
+      </a>
+      <a class="btn btn-primary" id="dl-win"
+         href="https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases/download/v1.0.0/AI-Sales-Pitch-Evaluator-Setup-1.0.0.exe">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.55 10.5 4.5v7.05H3V5.55M3 18.45l7.5 1.05v-6.97H3v5.92m8.25 1.16L21 21V12.53h-9.75v7.08m0-15.22v7.16H21V3l-9.75 1.39z"/></svg>
+        Download for Windows
+      </a>
+    </div>
+    <p class="dl-meta">
+      macOS: universal (Apple Silicon + Intel) · Windows: 64-bit installer ·
+      also available as a <a id="dl-portable"
+        href="https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases/download/v1.0.0/AI-Sales-Pitch-Evaluator-1.0.0-portable.exe">portable .exe</a>
+      · <a href="https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases/latest" target="_blank" rel="noopener">all releases</a>
+    </p>
+  </div>
+
+  <section id="features">
+    <h2>Everything you need to coach a sales team</h2>
+    <p class="section-sub">The same product as the web app, in a native desktop experience with auto-updates.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></div>
+        <h3>Script intelligence</h3>
+        <p>Upload your ideal script as TXT, PDF or DOCX. AI structures it into mandatory points, compliance statements, objection handling and closing.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div>
+        <h3>Record or upload pitches</h3>
+        <p>Record directly with your microphone or drag in MP3, WAV, M4A or OGG files. Transcription happens automatically.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
+        <h3>AI scoring</h3>
+        <p>Every pitch gets scored on script adherence, tone, confidence, empathy, clarity, compliance and closing quality — plus concrete improvement tips.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>
+        <h3>Dashboards &amp; leaderboard</h3>
+        <p>Track average scores, best and weakest performers, compliance rates and monthly trends. Export evaluations to CSV.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <h3>Built for teams</h3>
+        <p>Role-based access for Admins, Managers and Sales Executives. Everyone sees exactly what they need.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg></div>
+        <h3>Always up to date</h3>
+        <p>The desktop app checks for updates automatically and installs them in one click. Your login is remembered across restarts.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <p class="section-sub">From script to scored pitch in three steps.</p>
+    <div class="steps">
+      <div class="step">
+        <h3>Upload your ideal script</h3>
+        <p>Add the sales script your team should follow. AI breaks it into checkable sections.</p>
+      </div>
+      <div class="step">
+        <h3>Record or upload a pitch</h3>
+        <p>Sales executives record their pitch in the app or upload an existing call recording.</p>
+      </div>
+      <div class="step">
+        <h3>Get scored feedback</h3>
+        <p>AI compares the pitch to the script and delivers scores, strengths, weaknesses and tips.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Installation</h2>
+    <p class="section-sub">Takes under a minute on either platform.</p>
+    <div class="install-cols">
+      <div class="card">
+        <div class="os-head">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          <h3>macOS</h3>
+        </div>
+        <ol>
+          <li>Download the <strong>.dmg</strong> and open it.</li>
+          <li>Drag the app into <strong>Applications</strong>.</li>
+          <li>First launch: <strong>right-click the app → Open → Open</strong>.</li>
+          <li>Click <strong>Allow</strong> when asked for microphone access.</li>
+        </ol>
+        <div class="note">One universal app for Apple Silicon (M1–M4) and Intel Macs. The right-click step is only needed once — it tells Gatekeeper you trust this (not yet code-signed) app.</div>
+      </div>
+      <div class="card">
+        <div class="os-head">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.55 10.5 4.5v7.05H3V5.55M3 18.45l7.5 1.05v-6.97H3v5.92m8.25 1.16L21 21V12.53h-9.75v7.08m0-15.22v7.16H21V3l-9.75 1.39z"/></svg>
+          <h3>Windows</h3>
+        </div>
+        <ol>
+          <li>Download and run the <strong>Setup .exe</strong>.</li>
+          <li>If SmartScreen appears: <strong>More info → Run anyway</strong>.</li>
+          <li>Pick an install location and finish — the app starts automatically.</li>
+        </ol>
+        <div class="note">Prefer no installation? Use the <a href="https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases/latest" target="_blank" rel="noopener" style="color:inherit">portable .exe</a> — run it from anywhere, including a USB stick (portable builds don't auto-update).</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 AI Sales Pitch Evaluator</span>
+    <span>
+      <a href="https://github.com/HarshGcode/ai-sales-pitch-evaluator" target="_blank" rel="noopener">Source on GitHub</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases/latest" target="_blank" rel="noopener">Release notes</a>
+    </span>
+  </footer>
+
+</div>
+
+<script>
+  // Point the buttons at the newest release so this page never goes stale.
+  // Falls back to the hard-coded v1.0.0 links if the GitHub API is unreachable.
+  fetch("https://api.github.com/repos/HarshGcode/ai-sales-pitch-evaluator/releases/latest")
+    .then((r) => (r.ok ? r.json() : Promise.reject()))
+    .then((rel) => {
+      const assets = rel.assets || [];
+      const find = (test) => assets.find((a) => test(a.name));
+      const dmg = find((n) => n.endsWith(".dmg"));
+      const setup = find((n) => n.includes("Setup") && n.endsWith(".exe"));
+      const portable = find((n) => n.includes("portable") && n.endsWith(".exe"));
+      if (dmg) document.getElementById("dl-mac").href = dmg.browser_download_url;
+      if (setup) document.getElementById("dl-win").href = setup.browser_download_url;
+      if (portable) document.getElementById("dl-portable").href = portable.browser_download_url;
+      if (rel.tag_name)
+        document.getElementById("version-label").textContent = "Version " + rel.tag_name.replace(/^v/, "");
+    })
+    .catch(() => {});
+</script>
+</body>
+</html>
