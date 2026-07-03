@@ -1,8 +1,20 @@
 # AI Sales Pitch Evaluator
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Latest release](https://img.shields.io/github/v/release/HarshGcode/ai-sales-pitch-evaluator)](https://github.com/HarshGcode/ai-sales-pitch-evaluator/releases/latest)
+[![Desktop build](https://github.com/HarshGcode/ai-sales-pitch-evaluator/actions/workflows/desktop-release.yml/badge.svg)](https://github.com/HarshGcode/ai-sales-pitch-evaluator/actions/workflows/desktop-release.yml)
+
 Upload your ideal sales script, then evaluate sales executives by comparing recorded or
 uploaded pitch audio against it. AI transcribes the audio and scores script adherence,
 tone, confidence, compliance, and more.
+
+**Try it:** [web app](https://frontend-ochre-ten-27.vercel.app) ·
+[download for macOS / Windows](https://pitch-evaluator-download.vercel.app) ·
+no sign-up — just enter your name and pick a role. Bring your own AI key
+(Claude, OpenAI, Groq, or Gemini) or use the built-in engine.
+
+Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Licensed under
+the [MIT License](LICENSE).
 
 ## What's included (MVP scope)
 
