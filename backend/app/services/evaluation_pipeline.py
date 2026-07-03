@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from app import database
 from app.models.evaluation import AudioFile, Evaluation, Feedback
 from app.models.script import Script
+from app.models.user import User
 from app.schemas.evaluation import EvaluationLLMResponse, EvaluationScores
 from app.services.llm import get_llm_service
 from app.services.storage import get_storage_service
@@ -37,13 +38,19 @@ def run_evaluation_pipeline(evaluation_id: str) -> None:
         audio_file = db.get(AudioFile, evaluation.audio_file_id)
         script = db.get(Script, evaluation.script_id)
 
+        # Run on the AI provider/key of whoever started the evaluation (falls
+        # back to the app default when they haven't configured their own).
+        runner = db.get(User, evaluation.evaluated_by or evaluation.sales_exec_id)
+        ai_provider = runner.ai_provider if runner else None
+        ai_api_key = runner.ai_api_key if runner else None
+
         try:
             evaluation.status = "transcribing"
             db.commit()
 
             storage = get_storage_service()
             audio_path = storage.get_path(audio_file.file_path)
-            transcription = get_transcription_service()
+            transcription = get_transcription_service(ai_provider, ai_api_key)
             result = transcription.transcribe(audio_path)
 
             evaluation.transcript_text = result.text
@@ -52,7 +59,7 @@ def run_evaluation_pipeline(evaluation_id: str) -> None:
             evaluation.status = "evaluating"
             db.commit()
 
-            llm = get_llm_service()
+            llm = get_llm_service(ai_provider, ai_api_key)
             raw = None
             try:
                 raw = llm.evaluate_pitch(result.text, script.structured_json or {})

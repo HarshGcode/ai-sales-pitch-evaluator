@@ -1,5 +1,12 @@
 export type Role = "admin" | "manager" | "sales_exec";
 
+export type AIProvider = "groq" | "openai" | "anthropic" | "gemini";
+
+export interface AISettings {
+  provider: AIProvider | null;
+  has_key: boolean;
+}
+
 export interface User {
   id: string;
   organization_id: string;

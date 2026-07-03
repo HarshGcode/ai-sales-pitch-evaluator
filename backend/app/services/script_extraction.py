@@ -2,6 +2,7 @@ import logging
 
 from app import database
 from app.models.script import Script, ScriptSection
+from app.models.user import User
 from app.services.llm import get_llm_service, validate_script_structured
 
 logger = logging.getLogger(__name__)
@@ -22,7 +23,12 @@ def run_script_extraction(script_id: str) -> None:
             logger.warning("Script %s not found for extraction", script_id)
             return
 
-        llm = get_llm_service()
+        # Structure the script with the uploader's own AI provider/key if set.
+        uploader = db.get(User, script.uploaded_by)
+        llm = get_llm_service(
+            uploader.ai_provider if uploader else None,
+            uploader.ai_api_key if uploader else None,
+        )
         raw = None
         try:
             raw = llm.structure_script(script.raw_text or "")

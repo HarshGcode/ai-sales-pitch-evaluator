@@ -62,8 +62,8 @@ class GroqTranscription(WhisperTranscription):
 
     model = GROQ_WHISPER_MODEL
 
-    def __init__(self):
-        super().__init__(api_key=settings.GROQ_API_KEY, base_url=GROQ_BASE_URL)
+    def __init__(self, api_key: str | None = None):
+        super().__init__(api_key=api_key or settings.GROQ_API_KEY, base_url=GROQ_BASE_URL)
 
 
 class MockTranscription(TranscriptionService):
@@ -79,7 +79,20 @@ class MockTranscription(TranscriptionService):
         )
 
 
-def get_transcription_service() -> TranscriptionService:
+def get_transcription_service(
+    provider: str | None = None, api_key: str | None = None
+) -> TranscriptionService:
+    """Per-user key when the chosen provider hosts Whisper (groq/openai).
+
+    Anthropic and Gemini don't offer a Whisper-style transcription endpoint, so
+    users on those providers still transcribe through the app's default service —
+    their key only powers the scoring LLM.
+    """
+    if provider and api_key:
+        if provider == "groq":
+            return GroqTranscription(api_key=api_key)
+        if provider == "openai":
+            return WhisperTranscription(api_key=api_key)
     if settings.GROQ_API_KEY:
         return GroqTranscription()
     if settings.OPENAI_API_KEY:

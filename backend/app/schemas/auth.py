@@ -1,4 +1,6 @@
-from pydantic import BaseModel, EmailStr
+from typing import Literal
+
+from pydantic import BaseModel, EmailStr, Field
 
 from app.schemas.user import UserOut
 
@@ -20,3 +22,10 @@ class ChangePasswordRequest(BaseModel):
 
 class DemoLoginRequest(BaseModel):
     email: EmailStr
+
+
+class EnterRequest(BaseModel):
+    """Passwordless entry with the user's own name and chosen role."""
+
+    full_name: str = Field(min_length=1, max_length=100)
+    role: Literal["admin", "manager", "sales_exec"]

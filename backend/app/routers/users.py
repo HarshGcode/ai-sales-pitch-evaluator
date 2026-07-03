@@ -5,9 +5,16 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.database import get_db
-from app.deps import require_role
+from app.deps import get_current_user, require_role
 from app.models.user import Role, User
-from app.schemas.user import UserCreate, UserCreateResponse, UserOut, UserUpdate
+from app.schemas.user import (
+    AISettingsIn,
+    AISettingsOut,
+    UserCreate,
+    UserCreateResponse,
+    UserOut,
+    UserUpdate,
+)
 
 router = APIRouter(prefix="/users", tags=["users"])
 
@@ -66,6 +73,39 @@ def create_user(
     db.commit()
     db.refresh(user)
     return UserCreateResponse(user=UserOut.model_validate(user), initial_password=initial_password)
+
+
+@router.get("/me/ai-settings", response_model=AISettingsOut)
+def get_ai_settings(current_user: User = Depends(get_current_user)):
+    return AISettingsOut(provider=current_user.ai_provider, has_key=bool(current_user.ai_api_key))
+
+
+@router.put("/me/ai-settings", response_model=AISettingsOut)
+def update_ai_settings(
+    payload: AISettingsIn,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Choose which AI provider scores this user's evaluations, with their own key.
+
+    provider=None resets to the app default. Sending a provider without a key
+    keeps the previously stored key (so users can switch back without retyping).
+    """
+    if payload.provider is None:
+        current_user.ai_provider = None
+        current_user.ai_api_key = None
+    else:
+        if not payload.api_key and not current_user.ai_api_key:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="An API key is required for this provider",
+            )
+        current_user.ai_provider = payload.provider
+        if payload.api_key:
+            current_user.ai_api_key = payload.api_key
+    db.commit()
+    db.refresh(current_user)
+    return AISettingsOut(provider=current_user.ai_provider, has_key=bool(current_user.ai_api_key))
 
 
 @router.patch("/{user_id}", response_model=UserOut)

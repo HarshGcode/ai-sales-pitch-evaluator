@@ -2,6 +2,8 @@ import hashlib
 import json
 from abc import ABC, abstractmethod
 
+import httpx
+from anthropic import Anthropic
 from openai import OpenAI
 from pydantic import ValidationError
 
@@ -11,6 +13,21 @@ from app.schemas.script import ScriptStructured
 OPENAI_MODEL = "gpt-4o-mini"
 GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 GROQ_MODEL = "llama-3.3-70b-versatile"
+ANTHROPIC_MODEL = "claude-opus-4-8"
+GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
+
+
+def _extract_json(text: str) -> dict:
+    """Parse a JSON object from model output, tolerating ```json fences."""
+    text = text.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1] if "\n" in text else text
+        text = text.rsplit("```", 1)[0]
+    start, end = text.find("{"), text.rfind("}")
+    if start == -1 or end == -1:
+        raise ValueError("Model response contained no JSON object")
+    return json.loads(text[start : end + 1])
 
 
 class LLMService(ABC):
@@ -91,8 +108,69 @@ class GroqLLM(OpenAILLM):
 
     model = GROQ_MODEL
 
-    def __init__(self):
-        super().__init__(api_key=settings.GROQ_API_KEY, base_url=GROQ_BASE_URL)
+    def __init__(self, api_key: str | None = None):
+        super().__init__(api_key=api_key or settings.GROQ_API_KEY, base_url=GROQ_BASE_URL)
+
+
+class AnthropicLLM(LLMService):
+    """Claude via the official Anthropic SDK (Messages API)."""
+
+    model = ANTHROPIC_MODEL
+
+    def __init__(self, api_key: str):
+        self.client = Anthropic(api_key=api_key)
+
+    def _chat_json(self, system_prompt: str, user_prompt: str) -> dict:
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=8192,
+            thinking={"type": "adaptive"},
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_prompt}],
+        )
+        if response.stop_reason == "refusal":
+            raise ValueError("Claude declined to process this content")
+        text = "".join(block.text for block in response.content if block.type == "text")
+        return _extract_json(text)
+
+    def structure_script(self, raw_text: str) -> dict:
+        return self._chat_json(SCRIPT_STRUCTURING_SYSTEM_PROMPT, raw_text)
+
+    def evaluate_pitch(self, transcript: str, script_structured: dict) -> dict:
+        user_prompt = f"SCRIPT (structured):\n{json.dumps(script_structured)}\n\nTRANSCRIPT:\n{transcript}"
+        return self._chat_json(EVALUATION_SYSTEM_PROMPT, user_prompt)
+
+
+class GeminiLLM(LLMService):
+    """Google Gemini via the generateContent REST API."""
+
+    model = GEMINI_MODEL
+
+    def __init__(self, api_key: str):
+        self.api_key = api_key
+
+    def _chat_json(self, system_prompt: str, user_prompt: str) -> dict:
+        response = httpx.post(
+            f"{GEMINI_BASE_URL}/models/{self.model}:generateContent",
+            headers={"x-goog-api-key": self.api_key},
+            json={
+                "systemInstruction": {"parts": [{"text": system_prompt}]},
+                "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
+                "generationConfig": {"responseMimeType": "application/json"},
+            },
+            timeout=120,
+        )
+        response.raise_for_status()
+        data = response.json()
+        text = data["candidates"][0]["content"]["parts"][0]["text"]
+        return _extract_json(text)
+
+    def structure_script(self, raw_text: str) -> dict:
+        return self._chat_json(SCRIPT_STRUCTURING_SYSTEM_PROMPT, raw_text)
+
+    def evaluate_pitch(self, transcript: str, script_structured: dict) -> dict:
+        user_prompt = f"SCRIPT (structured):\n{json.dumps(script_structured)}\n\nTRANSCRIPT:\n{transcript}"
+        return self._chat_json(EVALUATION_SYSTEM_PROMPT, user_prompt)
 
 
 class MockLLM(LLMService):
@@ -172,7 +250,19 @@ class MockLLM(LLMService):
         }
 
 
-def get_llm_service() -> LLMService:
+# Providers a user can bring their own key for ("Which AI should score my pitch?")
+USER_LLM_PROVIDERS = {
+    "groq": GroqLLM,
+    "openai": OpenAILLM,
+    "anthropic": AnthropicLLM,
+    "gemini": GeminiLLM,
+}
+
+
+def get_llm_service(provider: str | None = None, api_key: str | None = None) -> LLMService:
+    """Per-user provider+key when configured; otherwise the app's env-based default."""
+    if provider and api_key and provider in USER_LLM_PROVIDERS:
+        return USER_LLM_PROVIDERS[provider](api_key=api_key)
     if settings.GROQ_API_KEY:
         return GroqLLM()
     if settings.OPENAI_API_KEY:

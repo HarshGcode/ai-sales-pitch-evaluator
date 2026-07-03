@@ -24,3 +24,8 @@ class User(Base, UUIDPKMixin, TimestampMixin):
     department: Mapped[str | None] = mapped_column(String(100), nullable=True)
     manager_id: Mapped[str | None] = mapped_column(ForeignKey("users.id"), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    # Bring-your-own AI: which LLM provider this user's evaluations run on
+    # (groq/openai/anthropic/gemini) and their own API key for it. Both null =
+    # the app's default provider (server env keys, or the mock).
+    ai_provider: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    ai_api_key: Mapped[str | None] = mapped_column(String(512), nullable=True)
