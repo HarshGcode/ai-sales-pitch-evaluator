@@ -3,7 +3,11 @@
 // The desktop app loads the deployed web frontend (Vercel), which proxies
 // /api/* to the Railway backend from its own origin — so the auth cookie is
 // always first-party and login works identically to the browser.
-const PROD_URL = "https://frontend-one-man-code.vercel.app";
+//
+// This must be the project's canonical production domain: the team-suffixed
+// aliases (…-one-man-code.vercel.app) sit behind Vercel's deployment
+// protection and redirect anonymous visitors to a Vercel SSO page.
+const PROD_URL = "https://frontend-ochre-ten-27.vercel.app";
 const DEV_URL = "http://localhost:3000";
 
 const isDev = process.argv.includes("--dev") || process.env.APP_ENV === "development";
