@@ -30,7 +30,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-muted/30">
+      {/* Opaque background: a translucent body lets the desktop app's window
+          color bleed through and the whole UI renders dark. */}
+      <body className="min-h-full flex flex-col bg-background">
         <AuthProvider>{children}</AuthProvider>
         <Toaster richColors position="top-right" />
       </body>

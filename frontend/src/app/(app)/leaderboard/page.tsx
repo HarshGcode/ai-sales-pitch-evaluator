@@ -60,12 +60,36 @@ export default function LeaderboardPage() {
                 {entries.map((entry, i) => (
                   <TableRow key={entry.user_id}>
                     <TableCell className="font-medium">
-                      {i === 0 ? <Trophy className="h-4 w-4 text-yellow-500" /> : `#${i + 1}`}
+                      {i < 3 ? (
+                        <span
+                          className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold ${
+                            i === 0
+                              ? "bg-amber-400/20 text-amber-600 dark:text-amber-400"
+                              : i === 1
+                                ? "bg-slate-400/20 text-slate-600 dark:text-slate-300"
+                                : "bg-orange-400/20 text-orange-700 dark:text-orange-400"
+                          }`}
+                        >
+                          {i === 0 ? <Trophy className="h-3.5 w-3.5" /> : i + 1}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground pl-2">{i + 1}</span>
+                      )}
                     </TableCell>
                     <TableCell className="font-medium">{entry.full_name}</TableCell>
                     <TableCell>{entry.department ?? "—"}</TableCell>
                     <TableCell>{entry.evaluation_count}</TableCell>
-                    <TableCell>{entry.average_score}</TableCell>
+                    <TableCell
+                      className={`font-semibold ${
+                        entry.average_score >= 80
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : entry.average_score >= 60
+                            ? "text-amber-600 dark:text-amber-400"
+                            : "text-rose-600 dark:text-rose-400"
+                      }`}
+                    >
+                      {entry.average_score}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
