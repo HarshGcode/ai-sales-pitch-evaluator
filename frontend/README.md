@@ -25,7 +25,7 @@ local Docker; see the repo root `.env.example`).
 
 ## Structure
 
-- `src/app/(auth)` — login/register pages
+- `src/app/(auth)` — "Who are you?" persona picker (passwordless demo entry)
 - `src/app/(app)` — authenticated app (dashboard, scripts, evaluations, leaderboard)
 - `src/components` — UI components (shadcn/ui based)
 - `src/lib` — API client and utilities

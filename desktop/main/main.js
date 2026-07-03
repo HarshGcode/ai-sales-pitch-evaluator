@@ -26,6 +26,12 @@ const updater = require("./updater");
 let mainWindow = null;
 let splash = null;
 
+// Dev runs get their own profile (cookies, window state, single-instance
+// lock), so `npm run dev` never collides with an installed production app.
+if (config.isDev) {
+  app.setPath("userData", `${app.getPath("userData")} (dev)`);
+}
+
 // Windows: required for notifications + taskbar grouping to attribute correctly.
 if (process.platform === "win32") {
   app.setAppUserModelId("com.harshgupta.aisalespitchevaluator");

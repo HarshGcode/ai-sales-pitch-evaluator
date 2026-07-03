@@ -68,11 +68,10 @@ docker compose up --build
 docker compose exec backend python -m app.seed
 ```
 
-Visit http://localhost:3000 and sign in with one of the seeded demo accounts:
-
-- `admin@acmecorp.com` / `admin123`
-- `manager@acmecorp.com` / `manager123`
-- `exec@acmecorp.com` / `exec123`
+Visit http://localhost:3000 and pick a persona on the "Who are you?" screen —
+Alice (Admin), Mark (Manager) or Sam (Sales Executive). No passwords: entry is a
+one-click demo login (`POST /auth/demo-login`) restricted to the three seeded
+accounts, and role-based access control still applies per persona.
 
 Everything works out of the box using mocked AI responses. To use real AI models,
 set `GROQ_API_KEY` (free, get one at https://console.groq.com/keys) or `OPENAI_API_KEY`

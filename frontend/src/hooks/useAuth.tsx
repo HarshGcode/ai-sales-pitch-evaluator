@@ -9,6 +9,8 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<User>;
+  /** Passwordless entry as one of the demo personas ("Who are you?" picker). */
+  enterAs: (email: string) => Promise<User>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -42,13 +44,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return result.user;
   }, []);
 
+  const enterAs = useCallback(async (email: string) => {
+    const result = await apiPost<{ user: User }>("/auth/demo-login", { email });
+    setUser(result.user);
+    return result.user;
+  }, []);
+
   const logout = useCallback(async () => {
     await apiPost("/auth/logout");
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refresh }}>
+    <AuthContext.Provider value={{ user, loading, login, enterAs, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );
