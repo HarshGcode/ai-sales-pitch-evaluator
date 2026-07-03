@@ -1,7 +1,7 @@
 {
   "name": "ai-sales-pitch-evaluator-desktop",
   "productName": "AI Sales Pitch Evaluator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Desktop app for the AI Sales Pitch Evaluator — evaluate sales pitches against your ideal script with AI.",
   "main": "main/main.js",
   "author": "Harsh Gupta <harshgupta.cfa@gmail.com>",
